@@ -12,6 +12,7 @@ struct ProfilePage: View {
     var prenom = "Zliaa"
     var mail = "Oumayma.Zliaa@esprit.tn"
     var age = 30
+    @State private var showPasswordChangeSheet = false
     @EnvironmentObject var navigationViewModel: NavigationViewModel
     @StateObject private var googleSignInVM = GoogleSignInVM()
     @State private var navigateToSignInView = false
@@ -39,10 +40,10 @@ struct ProfilePage: View {
                                            .padding()
                                    }
                     
-                    Text("\(googleSignInVM.givenName)")
+                    Text("\(AppStorageManager.shared.firstname ?? googleSignInVM.givenName)")
                         .font(.title)
                         .fontWeight(.bold)
-                    Text("\(googleSignInVM.mail)")
+                    Text("\(AppStorageManager.shared.email  ?? googleSignInVM.mail)")
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
@@ -54,12 +55,16 @@ struct ProfilePage: View {
                 .padding(.horizontal)
                 
                 VStack(spacing: 15) {
-                    ProfileRow(title: "First Name", value: googleSignInVM.firstName)
-                    ProfileRow(title: "Last Name", value: googleSignInVM.lastName)
-                    ProfileRow(title: "Mail", value: googleSignInVM.mail)
-                    ProfileRow(title: "Age", value: "\(age)")
+                    ProfileRow(title: "First Name", value:  AppStorageManager.shared.firstname ?? googleSignInVM.firstName)
+                    ProfileRow(title: "Last Name", value:AppStorageManager.shared.lastname ?? googleSignInVM.lastName)
+                    ProfileRow(title: "Mail", value:AppStorageManager.shared.email ?? googleSignInVM.mail)
+                    ProfileRow(title: "Password", value: "••••••••")
+                        .onTapGesture {
+                                                showPasswordChangeSheet.toggle()
+                                            }
                     Button(action: {
                         googleSignInVM.signOut()
+                        AppStorageManager.shared.clearToken()
                         navigationViewModel.navigateTo(destination: .SignIn)
            
                     }) {
@@ -83,6 +88,17 @@ struct ProfilePage: View {
             }
            .padding(.top, 20)
             .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
+            .sheet(isPresented: $showPasswordChangeSheet, content: {
+                if #available(iOS 16.4, *){
+                    ChangePasswordView()
+                        .presentationDetents([.height(300)])
+                        .presentationCornerRadius(30)
+                }else{
+                    ChangePasswordView()
+                        .presentationDetents([.height(300)])
+                        
+                }
+            })
             
            
         }

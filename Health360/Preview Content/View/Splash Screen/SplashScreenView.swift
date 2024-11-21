@@ -10,8 +10,6 @@ import DotLottie
 
 struct SplashScreenView: View {
     @StateObject private var googleSignInVM = GoogleSignInVM()
-    @State private var navigateToSignInView = false
-    @State private var navigateToHomeView = false
     @EnvironmentObject var navigationViewModel: NavigationViewModel
 
     var body: some View {
@@ -29,15 +27,15 @@ struct SplashScreenView: View {
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     if googleSignInVM.isLoggedIn {
-                        navigateToHomeView = true
+                        navigationViewModel.navigateTo(destination: .Home)
+                    } else if AppStorageManager.shared.login{
                         navigationViewModel.navigateTo(destination: .Home)
                     } else {
-                        navigateToSignInView = true
                         navigationViewModel.navigateTo(destination: .SignIn)
                     }
                 }
             }
-            
+             
     }
 }
 

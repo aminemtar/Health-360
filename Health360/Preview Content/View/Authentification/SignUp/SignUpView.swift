@@ -47,7 +47,7 @@ struct SignUp: View {
                 CustomTF(sfIcon: "at", hint: "Email ID", value: $emailID)
                 CustomTF(sfIcon: "person", hint: "First Name", value: $firstName)
                 CustomTF(sfIcon: "person", hint: "Last Name", value: $lastName)
-                CustomTF(sfIcon: "person", hint: "UserName Name", value: $userName)
+                CustomTF(sfIcon: "person", hint: "UserName", value: $userName)
                 CustomTF(sfIcon: "lock", hint: "Password",isPassword :true, value: $password)
                     .padding(.top,5)
                 CustomTF(sfIcon: "lock", hint: "Confirm Password",isPassword :true, value: $confirmpass_signup)
@@ -56,7 +56,11 @@ struct SignUp: View {
                 GradientButton(title: "Continue", icon: "arrow.right"){
                         vm.signup(email: emailID, password: password, firstname: firstName, lastname: lastName, username: userName, confirmpass_singup: confirmpass_signup) { success in
                             if success {
-                                // Handle successful signup
+                                AppStorageManager.shared.firstname = firstName
+                                AppStorageManager.shared.lastname = lastName
+                                AppStorageManager.shared.email = emailID
+                               
+                                
                                 navigationViewModel.navigateTo(destination: .Home)
                                 print("Signup successful.")
                             } else {

@@ -28,6 +28,7 @@ class UserViewModel: ObservableObject {
                     self.isAuthenticated = true
                    // self.user = user
                     print(user)
+                    AppStorageManager.shared.userId = user.id
                     completion(true)
                 }
             case .failure(let error):
@@ -43,7 +44,7 @@ class UserViewModel: ObservableObject {
             case .success(let user):
                 DispatchQueue.main.async {
                     self.isAuthenticated = true
-                   // self.user = user
+                    AppStorageManager.shared.userId = user.userId
                     print(user)
                     completion(true)
                 }
@@ -61,6 +62,24 @@ class UserViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.isAuthenticated = true
                    // self.user = user
+                    print(user)
+                    completion(true)
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+                completion(false)
+            }
+        }
+    }
+    func ChnagePWD(oldpass: String, newpass: String,userId:String,completion: @escaping (Bool) -> Void) {
+        print(username)
+        UserService().changePassword(userId: userId, oldpass: oldpass, newpass: newpass){ result in
+            switch result {
+            case .success(let user):
+                DispatchQueue.main.async {
+                    self.isAuthenticated = true
+                   // self.user = user
+                    
                     print(user)
                     completion(true)
                 }

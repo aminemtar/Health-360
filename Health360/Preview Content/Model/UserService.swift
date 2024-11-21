@@ -101,11 +101,44 @@ class UserService{
             }
         }.resume()
     }
+    func changePassword(userId: String,oldpass:String,newpass:String, completion: @escaping (Result<ChangePWDResponse, NetworkError>) -> Void) {
+        guard let url = URL(string: "http://localhost:3000/auth/change-password") else {
+            completion(.failure(.badUrl))
+            return
+        }
+
+        let body = ChangePWDRequest(userId: userId, oldpass: oldpass, newpass: newpass)
+        print(body)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONEncoder().encode(body)
+
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard let data = data, error == nil else {
+                completion(.failure(.badResponse))
+                return
+            }
+            
+            guard let user = try? JSONDecoder().decode(ChangePWDResponse.self, from: data) else {
+                    completion(.failure(.failedToDecodeResponse))
+                return
+            }
+         
+            completion(.success(user))
+        }.resume()
+    }
     
 }
 struct LoginRequest: Encodable {
     let username: String
     let password: String
+}
+struct ChangePWDRequest: Encodable {
+    let userId: String
+    let oldpass: String
+    let newpass: String
 }
 struct ResetMailRequest: Encodable {
     let email_FP: String
@@ -134,6 +167,9 @@ struct LoginResponse: Decodable {
     let accessToken: String
     let refreshToken: String
     let userId: String?
+}
+struct ChangePWDResponse: Decodable {
+    let message: String
 }
 struct SignupResponse: Decodable {
     let id:String

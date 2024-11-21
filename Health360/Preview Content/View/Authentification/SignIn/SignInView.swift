@@ -85,6 +85,9 @@ struct SignInView: View {
 struct Login: View {
     @State private var emailID : String = ""
     @State private var password : String = ""
+    @State private var showToast : Bool = false
+    @State private var messageToast : String = ""
+    @State private var colorToast : Color = .green
     @State private var showForgotPassword : Bool = false
     @State private  var showResetView : Bool = false
     @State private var askOTP : Bool = false
@@ -125,11 +128,16 @@ struct Login: View {
                     
                     vm.login(username: emailID, password: password){ success in
                         if success {
-                            // Handle successful login
-                           // showHome.toggle()
+                            showToast = true
+                            messageToast = "Login successful."
+                           
+                            AppStorageManager.shared.login = true
                             navigationViewModel.navigateTo(destination: .Home)
                         } else {
                             // Handle login failure
+                            showToast = true
+                            messageToast = "Login Failed. check your credentials"
+                       
                             print("Login failed.")
                         }
                     }
@@ -183,7 +191,11 @@ struct Login: View {
         })
         .padding(.vertical,15)
         .padding(.horizontal,25)
-        // asking email Id to send link
+        .toast(
+                        isPresented: $showToast,
+                        message: messageToast,
+                        backgroundColor: .red
+                    )
         .sheet(isPresented: $showForgotPassword, content: {
             if #available(iOS 16.4, *){
                 ForgotPasswordView(showResetView: $showResetView)

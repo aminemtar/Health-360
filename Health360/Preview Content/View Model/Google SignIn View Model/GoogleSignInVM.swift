@@ -74,6 +74,7 @@ class GoogleSignInVM: ObservableObject {
         }
     }
     func signOut(){
+        //AppStorageManager.shared.clearToken()
         GIDSignIn.sharedInstance.signOut()
         self.checkStatus()
     }
